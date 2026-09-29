@@ -1,0 +1,13 @@
+dart --disable-analytics
+
+dart run build_runner build
+
+dart compile exe ./bin/main.dart -o ./bin/new_app.exe
+
+dart compile aot-snapshot ./bin/main.dart
+
+dartaotruntime ./bin/main.aot
+
+dart compile jit-snapshot ./bin/main.dart
+
+dart compile kernel ./bin/main.dart
