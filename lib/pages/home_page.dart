@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage> {
   GestureDetector characterCard(Character character, int index) {
     return GestureDetector(
       onTap: () {
-        context.go(AppRoutes.character(character.id.toString()));
+        context.push(AppRoutes.character(character.id.toString()));
       },
       child: CharacterCard(character: character),
     );

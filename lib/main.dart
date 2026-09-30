@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:rick_and_morty_app/bloc/character_bloc/character_bloc.dart';
 import 'package:rick_and_morty_app/bloc/character_detail_bloc/character_detail_bloc.dart';
 import 'package:rick_and_morty_app/bloc/character_detail_bloc/character_detail_event.dart';
+import 'package:rick_and_morty_app/bloc/search_bloc/search_bloc.dart';
 import 'package:rick_and_morty_app/core/services/locator_service.dart';
 import 'package:rick_and_morty_app/pages/home_page.dart';
 import 'package:rick_and_morty_app/pages/search_page.dart';
@@ -38,7 +39,12 @@ final GoRouter _router = GoRouter(
             );
           },
         ),
-        GoRoute(path: "/search", builder: (BuildContext context, GoRouterState state) => const SearchPage()),
+        GoRoute(
+          path: "/search",
+          builder: (BuildContext context, GoRouterState state) {
+            return BlocProvider(create: (_) => SearchBloc(), child: SearchPage());
+          },
+        ),
       ],
     ),
   ],
