@@ -12,4 +12,12 @@ class CharactersService {
     await Future.delayed(Duration(seconds: 1));
     return results.map((item) => Character.fromJson(item)).toList();
   }
+
+  Future<Character> getCharacter({required String id}) async {
+    final uri = Uri.https("rickandmortyapi.com", "/api/character/$id");
+    final response = await http.get(uri);
+    final Json result = jsonDecode(response.body);
+    await Future.delayed(Duration(seconds: 1));
+    return Character.fromJson(result);
+  }
 }

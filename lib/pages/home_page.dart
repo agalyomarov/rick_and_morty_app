@@ -23,7 +23,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    context.read<CharacterBloc>().add(CharacterLoadEvent());
   }
 
   void _onScroll() {
@@ -60,6 +59,28 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: AppColors.mainBg,
       body: BlocBuilder<CharacterBloc, CharacterState>(
         builder: (context, state) {
+          if (state is CharacterEmptyState) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 20,
+                children: [
+                  Text(
+                    "Персонажы еще не закружены",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<CharacterBloc>().add(CharacterLoadEvent());
+                    },
+                    child: Text("Загрузить"),
+                  ),
+                ],
+              ),
+            );
+          }
+
           if (state is CharacterErrorState) {
             return Center(
               child: Column(
@@ -75,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       context.read<CharacterBloc>().add(CharacterLoadEvent());
                     },
-                    child: Text("Refresh"),
+                    child: Text("Обновить"),
                   ),
                 ],
               ),

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rick_and_morty_app/bloc/character_bloc/character_bloc.dart';
+import 'package:rick_and_morty_app/bloc/character_detail_bloc/character_detail_bloc.dart';
+import 'package:rick_and_morty_app/bloc/character_detail_bloc/character_detail_event.dart';
 import 'package:rick_and_morty_app/core/services/locator_service.dart';
 import 'package:rick_and_morty_app/pages/home_page.dart';
 import 'package:rick_and_morty_app/pages/search_page.dart';
@@ -28,7 +30,13 @@ final GoRouter _router = GoRouter(
       routes: <RouteBase>[
         GoRoute(
           path: "/character/:id",
-          builder: (BuildContext context, GoRouterState state) => CharacterPage(id: state.pathParameters['id']!),
+          builder: (BuildContext context, GoRouterState state) {
+            final id = state.pathParameters['id']!;
+            return BlocProvider(
+              create: (_) => CharacterDetailBloc()..add(CharacterDetailLoadEvent(id: id)),
+              child: CharacterPage(id: id),
+            );
+          },
         ),
         GoRoute(path: "/search", builder: (BuildContext context, GoRouterState state) => const SearchPage()),
       ],
