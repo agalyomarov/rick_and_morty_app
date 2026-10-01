@@ -43,7 +43,7 @@ dependencies:
   http: ^1.6.0
   cached_network_image: ^4.0.3
   easy_debounce: ^2.0.3
-
+  window_manager: ^0.5.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

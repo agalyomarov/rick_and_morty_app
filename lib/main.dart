@@ -11,11 +11,29 @@ import 'package:rick_and_morty_app/core/services/locator_service.dart';
 import 'package:rick_and_morty_app/pages/home_page.dart';
 import 'package:rick_and_morty_app/pages/search_page.dart';
 import 'package:rick_and_morty_app/pages/character_page.dart';
+import 'package:window_manager/window_manager.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+  WindowOptions windowOptions = const WindowOptions(
+    minimumSize: Size(800, 600),
+    size: Size(800, 600),
+    center: true,
+    // backgroundColor: Colors.transparent,
+    // skipTaskbar: false,
+    titleBarStyle: TitleBarStyle.hidden,
+    windowButtonVisibility: true,
+  );
+
   init();
-
   runApp(MyApp());
+
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
+
   /*   print(sl<SlFactory1>().param1.counter++);
   print(sl<SlFactory1>().param1.counter++);
   print(sl<SlFactory2>().param1.counter++);

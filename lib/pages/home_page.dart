@@ -9,6 +9,7 @@ import 'package:rick_and_morty_app/core/constants/app_routes.dart';
 import 'package:rick_and_morty_app/models/character.dart';
 import 'package:rick_and_morty_app/widgets/character_card.dart';
 import 'package:rick_and_morty_app/widgets/error_message.dart';
+import 'package:window_manager/window_manager.dart';
 
 class HomePage extends StatefulWidget {
   const new({super.key});
@@ -17,13 +18,16 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WindowListener {
   final ScrollController _scrollController = ScrollController();
+  bool isFullScreen = false;
 
   @override
   void initState() {
-    super.initState();
     _scrollController.addListener(_onScroll);
+    windowManager.addListener(this);
+    _loadFullScreenState();
+    super.initState();
   }
 
   void _onScroll() {
@@ -33,8 +37,48 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _loadFullScreenState() async {
+    final value = await windowManager.isFullScreen();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      isFullScreen = value;
+    });
+  }
+
+  Future<void> _toggleMaximize() async {
+    final isMaximized = await windowManager.isMaximized();
+
+    if (isMaximized) {
+      await windowManager.unmaximize();
+      await windowManager.setSize(const Size(800, 600));
+      await windowManager.center();
+    } else {
+      await windowManager.maximize();
+    }
+  }
+
+  @override
+  void onWindowEnterFullScreen() {
+    setState(() {
+      isFullScreen = true;
+    });
+  }
+
+  @override
+  void onWindowLeaveFullScreen() {
+    setState(() {
+      isFullScreen = false;
+    });
+  }
+
   @override
   void dispose() {
+    windowManager.removeListener(this);
+
     _scrollController
       ..removeListener(_onScroll)
       ..dispose();
@@ -45,19 +89,37 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Characters", style: TextStyle(color: AppColors.bodyText)),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.go(AppRoutes.search());
-            },
-            icon: Icon(Icons.search, color: AppColors.bodyText),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(30),
+        child: GestureDetector(
+          onDoubleTap: _toggleMaximize,
+          child: AppBar(
+            // title: Text("Characters", style: TextStyle(color: AppColors.bodyText)),
+            title: Padding(
+              padding: EdgeInsets.only(left: isFullScreen ? 0 : 100),
+              child: Row(
+                spacing: 20,
+                children: [
+                  Text("Characters", style: TextStyle(color: AppColors.bodyText)),
+                  Text("Characters", style: TextStyle(color: AppColors.bodyText)),
+                  Text("Characters", style: TextStyle(color: AppColors.bodyText)),
+                  Text("Characters", style: TextStyle(color: AppColors.bodyText)),
+                ],
+              ),
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  context.go(AppRoutes.search());
+                },
+                icon: Icon(Icons.search, color: AppColors.bodyText, size: 16),
+              ),
+              SizedBox(width: 10),
+            ],
+            centerTitle: false,
+            backgroundColor: Colors.blue.shade300,
           ),
-          SizedBox(width: 10),
-        ],
-        centerTitle: true,
-        backgroundColor: AppColors.mainBg,
+        ),
       ),
       backgroundColor: AppColors.mainBg,
       body: BlocBuilder<CharacterBloc, CharacterState>(
